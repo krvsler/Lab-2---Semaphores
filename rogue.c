@@ -62,6 +62,22 @@ void handle_signal(int sig)
             tries++;
         }
     }
+    
+    else if (sig == SEMAPHORE_SIGNAL)
+    {
+        int i = 0;
+        while (i < 4)
+        {
+            // collect the treasure and store it in spoils
+            if (dungeon->treasure[0] != '\0')
+            {
+                dungeon->spoils[i] = dungeon->treasure[0];
+                i++;
+            }
+        }
+    }
+    // end the spoils string
+    dungeon->spoils[4] = '\0';
 }
 
 int main(void)
