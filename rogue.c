@@ -15,7 +15,50 @@
 #include "dungeon_info.h"
 #include "dungeon_settings.h"
 
-struct Dungeon *dungeon;
+struct Dungeon *dungeon; //global var
+
+// signal handler to signal the rogue to pick the lock
+void handle_signal(int sig)
+{
+    // implement binary search to get the pick value for the rogue to pick the lock
+    float low;
+    float high;
+    float middle;
+
+    if (sig == DUNGEON_SIGNAL)
+    {
+        low = 0.0;
+        high = 100.0;
+
+        // keep picking while trap is locked
+        while (dungeon->trap.locked)
+        {
+            middle = (low + high) / 2.0; // get middle value
+            dungeon->rogue.pick = middle; // store the pick value in the shared memory for the rogue
+
+            // allow the game to check the pick value and update trap
+            usleep(TIME_BETWEEN_ROGUE_TICKS);
+
+            // if the pick needs to go up
+            if (dungeon->trap.direction == 'u')
+            {
+                low = middle;
+            }
+
+            // if the pick needs to go down
+            else if (dungeon->trap.direction == 'd')
+            {
+                high = middle;
+            }
+
+            // if the pick is correct
+            else if (dungeon->trap.direction == '-')
+            {
+                break;
+            }            
+        }
+    }
+}
 
 int main(void)
 {
@@ -36,8 +79,12 @@ int main(void)
     if (dungeon == MAP_FAILED)
     {
         printf("Rogue error with connecting the shared memory)\n");
+        close(fd);
         return 1;
     }
+
+    // run handle_signal when the rogue receives the dungeon signal
+    signal(DUNGEON_SIGNAL, handle_signal);
 
     // previews message to show that the game is running
     printf("Rogue started...\n");
