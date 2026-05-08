@@ -26,7 +26,7 @@ void handle_signal(int sig)
     char key;
     int i;
     int j;
-    char current;
+    int current;
     
     if (sig == DUNGEON_SIGNAL)
     {
@@ -86,7 +86,7 @@ void handle_signal(int sig)
                 }
             }
 
-            dungeon->wizard.spell[j] = current; // store the decoded character in the wizard spell
+            dungeon->wizard.spell[j] = (char)current; //typecast and store it in the decoded spell
             i++;
             j++;
         }
