@@ -24,20 +24,28 @@ void handle_signal(int sig)
     float low;
     float high;
     float middle;
+    int tries;
 
     if (sig == DUNGEON_SIGNAL)
     {
         low = 0.0;
         high = 100.0;
+        tries = 0;
 
         // keep picking while trap is locked
-        while (dungeon->trap.direction != '-')
+        while (tries < 100)
         {
             middle = (low + high) / 2.0; // get middle value
             dungeon->rogue.pick = middle; // store the pick value in the shared memory for the rogue
 
-            // allow the game to check the pick value and update trap
+            // allow the game to check the pick value and update direction 
             usleep(TIME_BETWEEN_ROGUE_TICKS);
+
+            // if the pick is correct
+            if (dungeon->trap.direction == '-')
+            {
+                break;
+            }            
 
             // if the pick needs to go up
             if (dungeon->trap.direction == 'u')
@@ -51,11 +59,7 @@ void handle_signal(int sig)
                 high = middle;
             }
 
-            // if the pick is correct
-            else if (dungeon->trap.direction == '-')
-            {
-                break;
-            }            
+            tries++;
         }
     }
 }

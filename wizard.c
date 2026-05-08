@@ -12,10 +12,12 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <signal.h>
+#include <semaphore.h>
 #include "dungeon_info.h"
 #include "dungeon_settings.h"
 
 struct Dungeon *dungeon; // global var
+sem_t *lever_two; // lever semaphore for the treasure room
 
 // signal handler to signal the wizard to decode the spell
 void handle_signal(int sig)
@@ -91,6 +93,21 @@ void handle_signal(int sig)
 
         dungeon->wizard.spell[j] = '\0'; // terminate the decoded spell when reached the end
     }
+
+    else if (sig == SEMAPHORE_SIGNAL)
+    {
+        // hold the lever
+        sem_wait(lever_two);
+
+        // wait until the rogue gets all the treasure
+        while (dungeon->treasure[3] == '\0') 
+        {
+            usleep(100000);
+        }
+
+        // release the lever
+        sem_post(lever_two);
+    }
 }
 
 int main(void)
@@ -119,6 +136,12 @@ int main(void)
     // run handle_signal when the wizard receives the dungeon signal
     signal(DUNGEON_SIGNAL, handle_signal);
 
+    // run handle_signal when the wizard receives the semaphore signal
+    signal(SEMAPHORE_SIGNAL, handle_signal);
+
+    // open lever for the treasure room
+    lever_two = sem_open(dungeon_lever_two, 0);
+
     // previews message to show that the game is running
     printf("Wizard started...\n");
 
@@ -127,6 +150,9 @@ int main(void)
     {
         usleep(100000); // helps CPU usage
     }
+
+    // close the lever semaphore
+    sem_close(lever_two);
 
     // removes Wizard mapping from shared memory
     munmap(dungeon, sizeof(struct Dungeon));
