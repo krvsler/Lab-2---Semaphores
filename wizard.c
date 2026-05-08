@@ -11,13 +11,15 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <signal.h>
 #include "dungeon_info.h"
 #include "dungeon_settings.h"
+
+struct Dungeon *dungeon;
 
 int main(void)
 {
     int fd; // store the shared memory file descriptor
-    struct Dungeon *dungeon;
 
     // open the shared memory that game.c created, also include a check
     fd = shm_open(dungeon_shm_name, O_RDWR, 0666);
