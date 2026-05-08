@@ -44,8 +44,12 @@ void unlock(void){
     high = 100.0;
     tries = 0;
 
+    //reset the pick
+    dungeon->rogue.pick = low;
+    usleep(TIME_BETWEEN_ROGUE_TICKS);
+
     // keep picking while trap is locked
-    while (tries < 100)
+    while (tries < 100 && dungeon->trap.locked)
     {
         middle = (low + high) / 2.0; // get middle value
         dungeon->rogue.pick = middle; // store the pick value in the shared memory for the rogue
@@ -60,7 +64,7 @@ void unlock(void){
         }            
 
         // if the pick needs to go up
-        if (dungeon->trap.direction == 'u')
+        else if (dungeon->trap.direction == 'u')
         {
             low = middle;
         }
