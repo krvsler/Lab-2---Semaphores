@@ -22,6 +22,9 @@ void handle_signal(int sig)
 {
     int shift;
     char key;
+    int i;
+    int j;
+    char current;
     
     if (sig == DUNGEON_SIGNAL)
     {
@@ -36,6 +39,49 @@ void handle_signal(int sig)
         {
             shift = 'N' - key; // compared the uppercase keys with uppercase N to get the decode shift
         }
+
+        i = 1; // i is the index for the encoded spell, starts at 1 because the first character of the spell is the key and not part of the spell
+        j = 0; // j is the index for the decoded spell, starts at 0 because the first character of the spell is the key and not part of the spell
+
+        // decode the spell
+        while (dungeon->barrier.spell[i] != '\0' && j < SPELL_BUFFER_SIZE - 1) 
+        {
+            current = dungeon->barrier.spell[i]; 
+
+            if(current >= 'a' && current <= 'z')
+            {
+                current = current + shift;
+                while (current < 'a')
+                {
+                    current = current + 26; // wrap around if the shift goes before 'a'
+                }
+
+                while (current > 'z')
+                {
+                    current = current - 26; // wrap around if the shift goes after 'z'
+                }
+            }
+
+            else if (current >= 'A' && current <= 'Z')
+            {
+                current = current + shift;
+                while (current < 'A')
+                {
+                    current = current + 26;
+                }
+                
+                while (current > 'Z')
+                {
+                    current = current - 26;
+                }
+            }
+
+            dungeon->wizard.spell[j] = current; // store the decoded character in the wizard spell
+            i++;
+            j++;
+        }
+
+        dungeon->wizard.spell[j] = '\0'; // terminate the decoded spell when reached the end
     }
 }
 
@@ -60,6 +106,9 @@ int main(void)
         printf("Wizard error with connecting the shared memory)\n");
         return 1;
     }
+
+    // run handle_signal when the wizard receives the dungeon signal
+    signal(DUNGEON_SIGNAL, handle_signal);
 
     // previews message to show that the game is running
     printf("Wizard started...\n");
