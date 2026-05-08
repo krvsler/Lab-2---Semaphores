@@ -16,69 +16,91 @@
 #include "dungeon_settings.h"
 
 struct Dungeon *dungeon; //global var
+int pick_lock = 0; // create variables to signal main when to pick the lock and get treasure
+int get_treasure = 0;
 
 // signal handler to signal the rogue to pick the lock
 void handle_signal(int sig)
 {
-    // implement binary search to get the pick value for the rogue to pick the lock
+    if (sig == DUNGEON_SIGNAL)
+    {
+        pick_lock = 1; // pick the lock when the rogue receives the signal
+    }
+    
+    else if (sig == SEMAPHORE_SIGNAL)
+    {
+        get_treasure = 1; // get the treasure when the rogue receives the signal
+    }
+}
+
+// implement binary search to get the pick value for the rogue to pick the lock
+void unlock(void){
     float low;
     float high;
     float middle;
     int tries;
 
-    if (sig == DUNGEON_SIGNAL)
+    low = 0.0;
+    high = 100.0;
+    tries = 0;
+
+    // keep picking while trap is locked
+    while (tries < 100)
     {
-        low = 0.0;
-        high = 100.0;
-        tries = 0;
+        middle = (low + high) / 2.0; // get middle value
+        dungeon->rogue.pick = middle; // store the pick value in the shared memory for the rogue
 
-        // keep picking while trap is locked
-        while (tries < 100)
+        // allow the game to check the pick value and update direction 
+        usleep(TIME_BETWEEN_ROGUE_TICKS);
+
+        // if the pick is correct
+        if (dungeon->trap.direction == '-')
         {
-            middle = (low + high) / 2.0; // get middle value
-            dungeon->rogue.pick = middle; // store the pick value in the shared memory for the rogue
+            break;
+        }            
 
-            // allow the game to check the pick value and update direction 
-            usleep(TIME_BETWEEN_ROGUE_TICKS);
-
-            // if the pick is correct
-            if (dungeon->trap.direction == '-')
-            {
-                break;
-            }            
-
-            // if the pick needs to go up
-            if (dungeon->trap.direction == 'u')
-            {
-                low = middle;
-            }
-
-            // if the pick needs to go down
-            else if (dungeon->trap.direction == 'd')
-            {
-                high = middle;
-            }
-
-            tries++;
+        // if the pick needs to go up
+        if (dungeon->trap.direction == 'u')
+        {
+            low = middle;
         }
+
+        // if the pick needs to go down
+        else if (dungeon->trap.direction == 'd')
+        {
+            high = middle;
+        }
+
+        tries++;
     }
-    
-    else if (sig == SEMAPHORE_SIGNAL)
+}
+
+// implement treasure collection
+void collect_treasure(void)
+{
+    int i = 0;
+    char last;
+    last = '\0';
+
+    // keep collecting while there is treasure
+    while (i < 4)
     {
-        int i = 0;
-        while (i < 4)
+        // collect the treasure and store it in spoils
+        if (dungeon->treasure[0] != '\0' && dungeon-> treasure[0] != last) //)
         {
-            // collect the treasure and store it in spoils
-            if (dungeon->treasure[0] != '\0')
-            {
-                dungeon->spoils[i] = dungeon->treasure[0];
-                i++;
-            }
+            dungeon->spoils[i] = dungeon->treasure[0];
+            last = dungeon->treasure[0]; // helps prvvent collecting the same treasure twice
+            i++;
         }
+        usleep(100000); // helps CPU usage
     }
     // end the spoils string
     dungeon->spoils[4] = '\0';
 }
+
+
+
+
 
 int main(void)
 {
@@ -106,12 +128,26 @@ int main(void)
     // run handle_signal when the rogue receives the dungeon signal
     signal(DUNGEON_SIGNAL, handle_signal);
 
+    // run handle_signal when the rogue receives the semaphore signal
+    signal(SEMAPHORE_SIGNAL, handle_signal);
+
     // previews message to show that the game is running
     printf("Rogue started...\n");
 
     // stay alive when the game is running 
     while (dungeon->running)
     {
+        if (pick_lock == 1)
+        {
+            pick_lock = 0; // reset pick lock signal
+            unlock();
+        }
+        
+        if (get_treasure == 1)
+        {
+            get_treasure = 0; // reset get treasure signal
+            collect_treasure();
+        }
         usleep(100000); // helps CPU usage
     }
 
