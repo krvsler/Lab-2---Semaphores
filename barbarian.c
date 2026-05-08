@@ -24,7 +24,7 @@ int main(void)
 
     if (fd == -1)
     {
-        print("Barbarian error with shared memory\n");
+        printf("Barbarian error with shared memory\n");
         return 1;
     }
 
@@ -33,7 +33,7 @@ int main(void)
 
     if (dungeon == MAP_FAILED)
     {
-        print("Barbarian error with connecting the shared memory)\n");
+        printf("Barbarian error with connecting the shared memory)\n");
         return 1;
     }
 

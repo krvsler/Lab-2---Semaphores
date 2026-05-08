@@ -28,8 +28,8 @@ int main(void)
     pid_t wizard_pid;
 
     // semaphores for the two levers at the end of the dungeon
-    sem_t *dungeon_lever_one;
-    sem_t *dungeon_lever_two;
+    sem_t *lever_one;
+    sem_t *lever_two;
 
     // create a shared memory named DungeonMem with a check that shared memory is big enough for the Dungeon struct
     fd = shm_open("DungeonMem", O_CREAT | O_RDWR, 0666);
@@ -85,9 +85,26 @@ int main(void)
         exit(1);
     }
 
-    // create lever semaphores
+    // remove any semaphores that already exist
+    sem_unlink(dungeon_lever_one);
+    sem_unlink(dungeon_lever_two);
+
+    // create lever semaphores, create checks for semaphores
     lever_one = sem_open(dungeon_lever_one, O_CREAT, 0666, 0);
+
+    if (lever_one == SEM_FAILED)
+    {
+        printf("Error with creating lever one semaphore\n");
+        return 1;
+    }
+
     lever_two = sem_open(dungeon_lever_two, O_CREAT, 0666, 0);
+
+    if (lever_two == SEM_FAILED)
+    {
+        printf("Error with creating lever two semaphore\n");
+        return 1;
+    }
 
     // call RunDungeon with the process ids
     RunDungeon(wizard_pid, rogue_pid, barbarian_pid);
