@@ -31,7 +31,7 @@ void handle_signal(int sig)
         high = 100.0;
 
         // keep picking while trap is locked
-        while (dungeon->trap.locked)
+        while (dungeon->trap.direction != '-')
         {
             middle = (low + high) / 2.0; // get middle value
             dungeon->rogue.pick = middle; // store the pick value in the shared memory for the rogue
