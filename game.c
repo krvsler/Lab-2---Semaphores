@@ -90,7 +90,7 @@ int main(void)
     sem_unlink(dungeon_lever_two);
 
     // create lever semaphores, create checks for semaphores
-    lever_one = sem_open(dungeon_lever_one, O_CREAT, 0666, 0);
+    lever_one = sem_open(dungeon_lever_one, O_CREAT, 0666, 1); // note that i changed the value to 1 because the levers are available
 
     if (lever_one == SEM_FAILED)
     {
@@ -98,7 +98,7 @@ int main(void)
         return 1;
     }
 
-    lever_two = sem_open(dungeon_lever_two, O_CREAT, 0666, 0);
+    lever_two = sem_open(dungeon_lever_two, O_CREAT, 0666, 1);
 
     if (lever_two == SEM_FAILED)
     {

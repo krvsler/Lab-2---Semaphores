@@ -12,17 +12,33 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <signal.h>
+#include <semaphore.h>
 #include "dungeon_info.h"
 #include "dungeon_settings.h"
 
 struct Dungeon *dungeon; // need to be global so that the signal handler can access it
+sem_t *lever_one; // lever semaphore for the treasure room
 
-// signal handler to signal the barbarian to attack
+// signal handler to signal the barbarian to attack or hold the lever
 void handle_signal(int sig)
 {
     if (sig == DUNGEON_SIGNAL)
     {
         dungeon->barbarian.attack = dungeon->enemy.health; // when the barbarian receives the signal, they attack the enemy
+    }
+    else if (sig == SEMAPHORE_SIGNAL)
+    {
+        // hold the lever
+        sem_wait(lever_one);
+
+        // wait until the rogue gets all the treasure
+        while (dungeon->treasure[3] == '\0') 
+        {
+            usleep(100000);
+        }
+
+        // release the lever
+        sem_post(lever_one);
     }
 }
 
@@ -53,6 +69,12 @@ int main(void)
     // run handle_signal when the barbarian receives the dungeon signal
     signal(DUNGEON_SIGNAL, handle_signal);
 
+    // run handle_signal when the barbarian receives the semaphore signal
+    signal(SEMAPHORE_SIGNAL, handle_signal);
+
+    // open lever for the treasure room
+    lever_one = sem_open(dungeon_lever_one, 0);
+
     // previews message to show that the game is running
     printf("Barbarian started...\n");
 
@@ -61,6 +83,9 @@ int main(void)
     {
         usleep(100000); // helps CPU usage
     }
+
+    // close the lever semaphore
+    sem_close(lever_one);
 
     // removes barbarian mapping from shared memory
     munmap(dungeon, sizeof(struct Dungeon));
