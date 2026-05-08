@@ -16,14 +16,13 @@
 #include "dungeon_settings.h"
 
 struct Dungeon *dungeon; // need to be global so that the signal handler can access it
-int signal_received = 0; // flag to indicate if the signal was received
 
 // signal handler to signal the barbarian to attack
 void handle_signal(int sig)
 {
     if (sig == DUNGEON_SIGNAL)
     {
-        signal_received = 1; // set flag to active when signal is received
+        dungeon->barbarian.attack = dungeon->enemy.health; // when the barbarian receives the signal, they attack the enemy
     }
 }
 
@@ -59,11 +58,6 @@ int main(void)
     // stay alive when the game is running 
     while (dungeon->running)
     {
-        if (signal_received == 1)
-        {
-            signal_received = 0; // reset the flag after handling the signal
-            dungeon->barbarian.attack = dungeon->enemy.health; // set attack to monster health
-        }
         usleep(100000); // helps CPU usage
     }
 
