@@ -15,7 +15,29 @@
 #include "dungeon_info.h"
 #include "dungeon_settings.h"
 
-struct Dungeon *dungeon;
+struct Dungeon *dungeon; // global var
+
+// signal handler to signal the wizard to decode the spell
+void handle_signal(int sig)
+{
+    int shift;
+    char key;
+    
+    if (sig == DUNGEON_SIGNAL)
+    {
+        key = dungeon->barrier.spell[0];
+
+        // get the shift value using the key and the first letter of the spell
+        if (key >= 'a' && key <= 'z')
+        {
+            shift = 'h' - key; // compared the lowercase key with lowercase h to get the decode shift
+        }
+        else
+        {
+            shift = 'N' - key; // compared the uppercase keys with uppercase N to get the decode shift
+        }
+    }
+}
 
 int main(void)
 {
