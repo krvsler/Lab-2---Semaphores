@@ -6,19 +6,19 @@
 all: game barbarian wizard rogue
 
 # builds the game launcher
-game: game.c dungeon.o dungeon_info.h dungeon.settings.h
-	gcc -Wall -Wextra -g -game.c dungeon.o -o game -lrt -pthread 
+game: game.c dungeon.o
+	gcc -Wall -Wextra -g game.c dungeon.o -o game -lrt -pthread 
 
 # builds barbarian executable
-barbarian: barbarian.c dungeon_info.h dungeon_settings.h
+barbarian: barbarian.c
 	gcc -Wall -Wextra -g barbarian.c -o barbarian -lrt -pthread
 
 # builds wizard executable
-wizard: wizard.c dungeon_info.h dungeon_settings.h
+wizard: wizard.c
 	gcc -Wall -Wextra -g wizard.c -o wizard -lrt -pthread
 
 # builds rogue executable
-rogue: rogue.c dungeon_info.h dungeon_settings.h
+rogue: rogue.c
 	gcc -Wall -Wextra -g rogue.c -o rogue -lrt -pthread
 
 # cleans up the directory by removing ALL executables
