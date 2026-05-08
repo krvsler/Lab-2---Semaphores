@@ -48,6 +48,13 @@ void handle_signal(int sig)
         {
             current = dungeon->barrier.spell[i]; 
 
+            // check if current character is an underscore
+            if (current == '_')
+            {
+                current = ' '; // replace underscores with spaces in the decoded spell
+            }
+
+            // check if the current character is a lowercase letter
             if(current >= 'a' && current <= 'z')
             {
                 current = current + shift;
@@ -62,6 +69,7 @@ void handle_signal(int sig)
                 }
             }
 
+            // check if the current character is an uppercase letter
             else if (current >= 'A' && current <= 'Z')
             {
                 current = current + shift;
@@ -104,6 +112,7 @@ int main(void)
     if (dungeon == MAP_FAILED)
     {
         printf("Wizard error with connecting the shared memory)\n");
+        close(fd);
         return 1;
     }
 
