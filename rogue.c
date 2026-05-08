@@ -82,24 +82,20 @@ void unlock(void){
 // implement treasure collection
 void collect_treasure(void)
 {
-    int i = 0;
-    char last;
-    last = '\0';
+    int i;
+    i = 0;
 
     // keep collecting while there is treasure
     while (i < 4)
     {
         // collect the treasure and store it in spoils
-        if (dungeon->treasure[0] != '\0' && dungeon-> treasure[0] != last) //)
+        if (dungeon->treasure[i] != '\0')
         {
-            dungeon->spoils[i] = dungeon->treasure[0];
-            last = dungeon->treasure[0]; // helps prvvent collecting the same treasure twice
+            dungeon->spoils[i] = dungeon->treasure[i];
             i++;
         }
-        usleep(100000); // helps CPU usage
+        usleep(TIME_BETWEEN_ROGUE_TICKS); // helps CPU usage
     }
-    // end the spoils string
-    dungeon->spoils[4] = '\0';
 }
 
 
