@@ -85,6 +85,9 @@ int main(void)
         exit(1);
     }
 
+    // create semaphores
+    dungeon_lever_one = sem_open(dungeon_lever_one, O_CREAT, 0666, 0);
+    dungeon_lever_two = sem_open(dungeon_lever_two, O_CREAT, 0666, 0);
 
     // call RunDungeon with the process ids
     RunDungeon(wizard_pid, rogue_pid, barbarian_pid);
