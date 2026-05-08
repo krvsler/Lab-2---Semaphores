@@ -13,6 +13,7 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <semaphore.h>
 #include "dungeon_info.h"
 #include "dungeon_settings.h"
 
@@ -25,6 +26,10 @@ int main(void)
     pid_t barbarian_pid; 
     pid_t rogue_pid;
     pid_t wizard_pid;
+
+    // semaphores for the two levers at the end of the dungeon
+    sem_t *dungeon_lever_one;
+    sem_t *dungeon_lever_two;
 
     // create a shared memory named DungeonMem with a check that shared memory is big enough for the Dungeon struct
     fd = shm_open("DungeonMem", O_CREAT | O_RDWR, 0666);
