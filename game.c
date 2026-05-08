@@ -110,6 +110,10 @@ int main(void)
     RunDungeon(wizard_pid, rogue_pid, barbarian_pid);
     dungeon->running = false; // stops after dungeon is finished running
 
+    //clean up semaphores that were created during the run
+    sem_close(lever_one);
+    sem_close(lever_two);
+
     // clean up shared memory after the dungeon is done
     waitpid(barbarian_pid, NULL, 0);
     waitpid(wizard_pid, NULL, 0);
