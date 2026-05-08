@@ -110,6 +110,8 @@ int main(void)
     RunDungeon(wizard_pid, rogue_pid, barbarian_pid);
     dungeon->running = false; // stops after dungeon is finished running
 
+    // wait for the processes to finish, need to do before cleaning up semaphores 
+    // and shared memory since the processes will be using those resources until they finish
     waitpid(barbarian_pid, NULL, 0);
     waitpid(wizard_pid, NULL, 0);
     waitpid(rogue_pid, NULL, 0);
@@ -117,6 +119,8 @@ int main(void)
     // clean up semaphores that were created during the run
     sem_close(lever_one);
     sem_close(lever_two);
+    sem_unlink(dungeon_lever_one);
+    sem_unlink(dungeon_lever_two);
 
     // clean up shared memory after the dungeon is done
     munmap(dungeon, sizeof(struct Dungeon));
