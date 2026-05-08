@@ -46,6 +46,7 @@ int main(void)
     if (dungeon == MAP_FAILED)
     {
         printf("Barbarian error with connecting the shared memory)\n");
+        close(fd);
         return 1;
     }
 

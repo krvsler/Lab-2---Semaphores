@@ -106,6 +106,9 @@ int main(void)
         return 1;
     }
 
+    // adjusting time because i think my processes are opening too fast
+    sleep(1);
+
     // call RunDungeon with the process ids
     RunDungeon(wizard_pid, rogue_pid, barbarian_pid);
     dungeon->running = false; // stops after dungeon is finished running
