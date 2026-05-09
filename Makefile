@@ -1,4 +1,5 @@
 # Lab 2 Makefile - CECS 326
+# Krysler Bagunu 
 #
 # This will make the game launcher, and the three character executables (barbarian, wizard, rogue).
 
@@ -21,6 +22,6 @@ wizard: wizard.c
 rogue: rogue.c
 	gcc -Wall -Wextra -g rogue.c -o rogue -lrt -pthread
 
-# cleans up the directory by removing ALL executables
+# cleans up the directory by removing ALL executables.
 clean:
 	rm -f game barbarian wizard rogue

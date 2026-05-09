@@ -4,7 +4,7 @@
  * Lab 2
  * barbarian.c
  * 
- * description: barbarian class where they attack the monster and get the treasure
+ * description: barbarian class where they attack the monster and hold the lever.
 */
 
 #include <stdio.h>
@@ -87,7 +87,7 @@ int main(void)
     // close the lever semaphore
     sem_close(lever_one);
 
-    // removes barbarian mapping from shared memory
+    // removes barbarian mapping from shared memory.
     munmap(dungeon, sizeof(struct Dungeon));
     close(fd);
 

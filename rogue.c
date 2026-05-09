@@ -4,7 +4,7 @@
  * Lab 2
  * rogue.c
  * 
- * description: rogue class where they try to pick the lock and get the treasure
+ * description: rogue class where they try to pick the lock and get the treasure.
 */
 
 #include <stdio.h>
@@ -152,7 +152,7 @@ int main(void)
         usleep(100000); // helps CPU usage
     }
 
-    // removes rogue mapping from shared memory
+    // removes rogue mapping from shared memory.
     munmap(dungeon, sizeof(struct Dungeon));
     close(fd);
 

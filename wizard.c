@@ -4,7 +4,7 @@
  * Lab 2
  * wizard.c
  * 
- * description: right now im just creating a placeholder for my character classes
+ * description: wizard class where they decode the spell and hold the lever.
 */
 
 #include <stdio.h>
@@ -154,7 +154,7 @@ int main(void)
     // close the lever semaphore
     sem_close(lever_two);
 
-    // removes Wizard mapping from shared memory
+    // removes Wizard mapping from shared memory.
     munmap(dungeon, sizeof(struct Dungeon));
     close(fd);
 

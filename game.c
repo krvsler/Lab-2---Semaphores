@@ -4,7 +4,7 @@
  * Lab 2
  * game.c
  * 
- * description: this is where the game/dungeon will launch and run. this is the main setup file
+ * description: this is where the game/dungeon will launch and run. this is the main setup file.
 */
 
 #include <stdio.h>
@@ -125,7 +125,7 @@ int main(void)
     sem_unlink(dungeon_lever_one);
     sem_unlink(dungeon_lever_two);
 
-    // clean up shared memory after the dungeon is done
+    // clean up shared memory after the dungeon is done.
     munmap(dungeon, sizeof(struct Dungeon));
     close(fd);
     shm_unlink(dungeon_shm_name);
